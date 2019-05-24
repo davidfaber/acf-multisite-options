@@ -148,13 +148,7 @@ class Plugin
 	 */
 	public function get_options_page_by_post_id( $post_id )
 	{
-		$pages = acf_get_options_pages();
-		foreach( $pages as $page ){
-			if( !empty( $page['post_id'] ) && $page['post_id'] === $post_id ){
-				return $page;
-			}
-		}
-		return null;
+        return false !== stripos($post_id, 'network-options') ? ['network' => true] : null;
 	}
 
 	/**
@@ -174,6 +168,7 @@ class Plugin
 		if( !$post_id ){
 			return;
 		}
+
 		$page = $this->get_options_page_by_post_id( $post_id );
 		if( !$page || empty( $page['network'] ) ){
 			return $return;
@@ -272,9 +267,9 @@ class Plugin
 		*  @param	mixed $_value The original value before modification.
 		*/
 		$_value = $value;
-		$value = apply_filters( "acf/update_value/type={$field['type']}",	$value, $post_id, $field, $_value );
-		$value = apply_filters( "acf/update_value/name={$field['_name']}",	$value, $post_id, $field, $_value );
-		$value = apply_filters( "acf/update_value/key={$field['key']}",		$value, $post_id, $field, $_value );
+//		$value = apply_filters( "acf/update_value/type={$field['type']}",	$value, $post_id, $field, $_value );
+//		$value = apply_filters( "acf/update_value/name={$field['_name']}",	$value, $post_id, $field, $_value );
+//		$value = apply_filters( "acf/update_value/key={$field['key']}",		$value, $post_id, $field, $_value );
 		$value = apply_filters( "acf/update_value",							$value, $post_id, $field, $_value );
 
 
@@ -375,20 +370,16 @@ class Plugin
 		// get post_id info
 		$info = acf_get_post_id_info($post_id);
 
-
 		// bail early if no $post_id (acf_form - new_post)
 		if( !$info['id'] ) return $value;
 
-
 		// option
 		if( $info['type'] === 'option' ) {
-
 			$name = $prefix . $post_id . '_' . $name;
-			$value = get_site_option( $name, null );
 
+			$value = get_site_option( $name, null );
 		// meta
 		} else {
-
 			$name = $prefix . $name;
 			$meta = get_metadata( $info['type'], $info['id'], $name, false );
 
