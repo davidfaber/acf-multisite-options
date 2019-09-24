@@ -206,9 +206,8 @@ class Plugin
 		// Update store.
 		$store->set( "$post_id:$field_name", $value );
 
-
 		// return
-		return $value;
+		return is_string($value) ? stripcslashes($value) : $value;
 	}
 
 	public function format_value_start( $value, $post_id, $field )
@@ -267,11 +266,7 @@ class Plugin
 		*  @param	mixed $_value The original value before modification.
 		*/
 		$_value = $value;
-//		$value = apply_filters( "acf/update_value/type={$field['type']}",	$value, $post_id, $field, $_value );
-//		$value = apply_filters( "acf/update_value/name={$field['_name']}",	$value, $post_id, $field, $_value );
-//		$value = apply_filters( "acf/update_value/key={$field['key']}",		$value, $post_id, $field, $_value );
-		$value = apply_filters( "acf/update_value",							$value, $post_id, $field, $_value );
-
+		$value = apply_filters("acf/update_value", $value, $post_id, $field, $_value);
 
 		// allow null to delete
 		if( $value === null ) {
